@@ -1,0 +1,87 @@
+<project name="myproject" default="compile" basedir=".">
+  <description>
+    WRITE A BRIEF DESCRIPTION OF YOUR PROJECT HERE.
+  </description>
+
+  <!-- Global Properties -->
+
+  <property name="srcDir"  location="src" />
+  <property name="libDir"  location="lib" />
+
+  <property name="buildDir" location="build"/>
+  <property name="buildClassesDir" location="${buildDir}/classes"/>
+  <property name="javaDocDir" location="${buildDir}/javadoc"/>
+
+  <property name="testSrcDir" location="test"/>
+  <property name="testBuildDir" location="${buildDir}/tests"/>
+  <property name="testResultsDir" location="${buildDir}/results"/>
+
+  <!-- Library Paths -->
+
+  <!--
+  This path is for libraries used during the normal compile process.  IT IS NOT
+  FOR UNIT-TESTING LIBRARIES.  For unit-testing libraries, see "test.path"
+  below.
+  -->
+  <path id="libs.path">
+    <!-- Example library dependency.
+    <fileset dir="${libDir}">
+      <include name="antlr-2.7.5.jar" />
+    </fileset>
+    -->
+  </path>
+
+  <!--
+  This path is for libraries used during testing.  It includes the library files
+  as well.
+  -->
+  <path id="test.path">
+    <path refid="libs.path" />
+
+    <!-- We need to include the directory where the project classes end up! -->
+    <pathelement location="${buildClassesDir}" />
+
+    <!-- Example library dependency.
+    <fileset dir="${libDir}">
+      <include name="junit.jar" />
+    </fileset>
+    -->
+  </path>
+
+  <!-- Build Targets -->
+
+  <!--
+  <target name="full" depends="test,javadoc"
+          description="Runs test and javadoc targets in that order." />
+  -->
+
+  <!-- Initialization target. -->
+  <target name="-init">
+    <tstamp/>
+    <mkdir dir="${buildDir}" />
+  </target>
+
+  <target name="debug"
+          description="Set properties for a debug build.">
+    <property name="java.debug" value="on" />
+    <property name="java.opt"   value="off" />
+  </target>
+
+  <target name="release"
+          description="Set properties for a release build.">
+    <property name="java.debug" value="off" />
+    <property name="java.opt"   value="on" />
+  </target>
+
+  <target name="compile" depends="debug"
+          description="Compile the project source-code." >
+
+    <mkdir dir="${buildClassesDir}" />
+
+    <javac destdir="${buildClassesDir}" classpathref="libs.path"
+           debug="${java.debug}" optimize="${java.opt}" deprecation="on">
+      <src path="${srcDir}" />
+    </javac>
+  </target>
+
+</project>
