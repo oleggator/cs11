@@ -1,5 +1,10 @@
-// Вывод всех простых чисел до 100
+/**
+ * Вывод всех простых чисел до 100
+ **/
 public class Primes {
+    /**
+     * Точка входа
+     **/
     public static void main(String[] args) {
 
         for (int i = 2; i < 100; ++i)
@@ -8,7 +13,9 @@ public class Primes {
 
     }
 
-    // Определение простого числа
+    /**
+     * Определение простого числа
+     **/
     public static boolean isPrime(int n) {
         for (int i = 2; i < n; ++i)
             if (n % i == 0)
@@ -16,5 +23,5 @@ public class Primes {
 
         return true;
     }
-    
+
 }
