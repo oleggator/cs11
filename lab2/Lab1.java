@@ -1,5 +1,6 @@
 import java.util.Scanner;
 import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 
 /**
  * На вход принимает координаты вершин треугольника
@@ -27,7 +28,7 @@ public class Lab1 {
             points[1].equals(points[2])
         ) {
 
-            System.out.println("Одна из сторон треугольника больше суммы остальных");
+            System.out.println("Одна или более сторон вырождены");
             System.exit(1);
 
         } else {
