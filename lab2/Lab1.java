@@ -28,7 +28,7 @@ public class Lab1 {
             points[1].equals(points[2])
         ) {
 
-            System.out.println("Одна или более сторон вырождены");
+            System.out.println("Точки совпадают");
             System.exit(1);
 
         } else {
