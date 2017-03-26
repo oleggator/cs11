@@ -23,4 +23,29 @@ public class Location
     {
         this(0, 0);
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+
+        if (obj == null)
+            return false;
+
+        if (getClass() != obj.getClass())
+            return false;
+
+        Location otherLocation = (Location)obj;
+
+        return otherLocation.xCoord == xCoord
+            && otherLocation.yCoord == yCoord;
+    }
+
+    /** Cantor pairing function **/
+    @Override
+    public int hashCode()
+    {
+        return (xCoord + yCoord) * (xCoord + yCoord + 1) / 2 + xCoord;
+    }
 }
