@@ -50,10 +50,6 @@ public class AStarState
                 minimal = point;
 
         return minimal;
-
-        // return Collections.min(openedPoints.values(), (point1, point2) -> 
-        //     point1.getRemainingCost() < point2.getRemainingCost()
-        // );
     }
 
     /**
@@ -80,16 +76,13 @@ public class AStarState
         } else {
             return false;
         }
-
     }
-
 
     /** Returns the current number of open waypoints. **/
     public int numOpenWaypoints()
     {
         return openedPoints.size();
     }
-
 
     /**
      * This method moves the waypoint at the specified location from the
