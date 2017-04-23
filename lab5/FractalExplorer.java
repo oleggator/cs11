@@ -35,7 +35,7 @@ class FractalExplorer {
 
     /* Создание и отображение графического интерфейса */
     private void createAndShowGUI() {
-        JFrame frame = new JFrame("Fractal Explorer");
+        final JFrame frame = new JFrame("Fractal Explorer");
         frame.setLayout(new BorderLayout());
 
         JLabel label = new JLabel("Fractal:");
