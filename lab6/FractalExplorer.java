@@ -63,7 +63,7 @@ class FractalExplorer {
                     colorsOfPoints[i] = 0;
                 } else {
                     float hue = 0.7f + (float) iterationsCount / 200f;
-                    colorsOfPoints[i] = Color.HSBtoRGB(hue, 1f, 1f);;
+                    colorsOfPoints[i] = Color.HSBtoRGB(hue, 1f, 1f);
                 }
             }
 
