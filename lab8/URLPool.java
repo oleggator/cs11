@@ -10,6 +10,7 @@ class URLPool {
 
     public synchronized boolean addToScan(URLDepthPair urlDepthPair) {
         if (scannedUrls.contains(urlDepthPair)) {
+
             return false;
         } else {
             return urlsToScan.add(urlDepthPair);

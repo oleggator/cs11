@@ -1,6 +1,6 @@
 import java.net.*;
 
-class URLDepthPair {
+class URLDepthPair extends Object {
 
     private URL url;
     private int depth;
@@ -18,6 +18,7 @@ class URLDepthPair {
         return depth;
     }
 
+    @Override
     public boolean equals(Object obj) {
         System.out.println("equals");
         if (this.getClass() != obj.getClass()) {
@@ -31,6 +32,7 @@ class URLDepthPair {
         return false;
     }
 
+    @Override
     public int hashCode() {
         System.out.println("hash");
         return url.toString().hashCode();

@@ -21,110 +21,114 @@ class CrawlerTask implements Runnable {
         depth = initDepth;
         activeThreadsCount = initActiveThreadsCount;
         threadNumber = initThreadNumber;
+
+        System.out.println(threadNumber);
     }
 
     public void run() {
-        synchronized(urlPool) {
-            while (true) {
-                if (urlPool.getSize() == 0) {
-                    try {
-                        if (activeThreadsCount.get() == 0) {
-                            synchronized(mutex) {
-                                mutex.notify();
-                            }
+        while (true) {
+            if (urlPool.getSize() == 0) {
+                try {
+                    if (activeThreadsCount.get() == 0) {
+                        synchronized(mutex) {
+                            mutex.notify();
                         }
+                    }
 
-                        synchronized(activeThreadsCount) {
-                            activeThreadsCount.addAndGet(-1);
-                        }
-                        
+                    synchronized(activeThreadsCount) {
+                        activeThreadsCount.addAndGet(-1);
+                    }
+                    synchronized(urlPool) {
                         urlPool.wait();
                     }
-                    catch (InterruptedException e) {
-                        System.err.println(e.getMessage());
-                        continue;
-                    }
                 }
-                
-                URLDepthPair urlDepthPair = urlPool.get();
-                if (urlDepthPair.getDepth() + 1 > depth) {
-                    return;
-                }
-
-                Socket socket;
-
-                try {
-                    socket = new Socket(InetAddress.getByName(urlDepthPair.getUrl().getHost()),
-                                                              urlDepthPair.getUrl().getDefaultPort());
-                }
-                catch (IOException e) {
+                catch (InterruptedException e) {
                     System.err.println(e.getMessage());
                     continue;
                 }
+            }
+            
+            URLDepthPair urlDepthPair = urlPool.get();
+            if (urlDepthPair.getDepth() + 1 > depth) {
+                return;
+            }
 
-                try {
-                    socket.setSoTimeout(5000);
-                }
-                catch (SocketException e) {
-                    System.err.println(e.getMessage());
-                    continue;
-                }
+            Socket socket;
 
-                InputStream inputStream;
-                try {
-                    inputStream = socket.getInputStream();
-                }
-                catch (IOException e) {
-                    System.err.println("e.getMessage()");
-                    continue;
-                }
+            try {
+                socket = new Socket(InetAddress.getByName(urlDepthPair.getUrl().getHost()),
+                                                          urlDepthPair.getUrl().getDefaultPort());
+            }
+            catch (IOException e) {
+                System.err.println(e.getMessage());
+                continue;
+            }
 
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            try {
+                socket.setSoTimeout(5000);
+            }
+            catch (SocketException e) {
+                System.err.println(e.getMessage());
+                continue;
+            }
 
-                OutputStream outputStream;
-                try {
-                    outputStream = socket.getOutputStream();
-                }
-                catch (IOException e) {
-                    System.err.println(e.getMessage());
-                    continue;
-                }
+            InputStream inputStream;
+            try {
+                inputStream = socket.getInputStream();
+            }
+            catch (IOException e) {
+                System.err.println("e.getMessage()");
+                continue;
+            }
 
-                PrintWriter printWriter = new PrintWriter(outputStream, true);
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
-                printWriter.println("GET /" + urlDepthPair.getUrl().getPath() + " HTTP/1.1");
-                printWriter.println("Host: " + urlDepthPair.getUrl().getHost());
-                printWriter.println("Connection: close");
-                printWriter.println("");
+            OutputStream outputStream;
+            try {
+                outputStream = socket.getOutputStream();
+            }
+            catch (IOException e) {
+                System.err.println(e.getMessage());
+                continue;
+            }
 
-                String responseLine = null;
-                try {
-                    while ((responseLine = bufferedReader.readLine()) != null) {
-                        Pattern pattern = Pattern.compile("href=\"(.*?)\"", Pattern.CASE_INSENSITIVE);
-                        Matcher matcher = pattern.matcher(responseLine);
+            PrintWriter printWriter = new PrintWriter(outputStream, true);
 
-                        if (matcher.find()) {
-                            String urlString = matcher.group(1);
-                            URL scannedUrl = new URL(urlDepthPair.getUrl(), urlString);
+            printWriter.println("GET /" + urlDepthPair.getUrl().getPath() + " HTTP/1.1");
+            printWriter.println("Host: " + urlDepthPair.getUrl().getHost());
+            printWriter.println("Connection: close");
+            printWriter.println("");
 
-                            if (scannedUrl.getProtocol().equals("http")) {
-                                if (urlPool.addToScan(new URLDepthPair(scannedUrl,
-                                                                       urlDepthPair.getDepth() + 1))) {
+            String responseLine = null;
+            try {
+                while ((responseLine = bufferedReader.readLine()) != null) {
+                    Pattern pattern = Pattern.compile("href=\"(.*?)\"", Pattern.CASE_INSENSITIVE);
+                    Matcher matcher = pattern.matcher(responseLine);
 
-                                    System.out.println((urlDepthPair.getDepth() + 1) + ": " +
-                                                      scannedUrl.toString());
+                    if (matcher.find()) {
+                        String urlString = matcher.group(1);
+                        URL scannedUrl = new URL(urlDepthPair.getUrl(), urlString);
 
-                                    urlPool.notify();
+                        if (scannedUrl.getProtocol().equals("http")) {
+                            if (urlPool.addToScan(new URLDepthPair(scannedUrl,
+                                                                   urlDepthPair.getDepth() + 1))) {
+
+                                System.out.println((urlDepthPair.getDepth() + 1) + ": " +
+                                                  scannedUrl.toString());
+                                                  
+                                synchronized(urlPool) {
+                                    urlPool.notifyAll();
                                 }
+                                
                             }
                         }
                     }
                 }
-                catch (IOException e) {
-                    System.err.println(e.getMessage());
-                    continue;
-                }
+            }
+            catch (IOException e) {
+                System.err.println(e.getMessage());
+                continue;
             }
         }
     }
