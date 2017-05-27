@@ -28,13 +28,13 @@ class Crawler {
                 catch (InterruptedException e) {
                     System.err.println(e.getMessage());
                 }
-
-                return;
             }
         }
         catch (MalformedURLException message) {
             System.out.println("Crawler <URL> <глубина поиска>");
         }
+
+        return;
     }
 
     public static void main(String[] args) {
@@ -46,6 +46,7 @@ class Crawler {
 
         try {
             getSites(new URL(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+            System.exit(0);
         } 
         catch (MalformedURLException message) {
             System.out.println("Crawler <URL> <глубина поиска>");

@@ -14,30 +14,29 @@ class CrawlerTask implements Runnable {
 
     CrawlerTask(URLPool initURLPool,
                 int initDepth,
-                Object mutex,
+                Object initMutex,
                 AtomicInteger initActiveThreadsCount,
                 int initThreadNumber) {
         urlPool = initURLPool;
         depth = initDepth;
         activeThreadsCount = initActiveThreadsCount;
         threadNumber = initThreadNumber;
-
-        System.out.println(threadNumber);
+        mutex = initMutex;
     }
 
     public void run() {
         while (true) {
             if (urlPool.getSize() == 0) {
                 try {
-                    if (activeThreadsCount.get() == 0) {
-                        synchronized(mutex) {
-                            mutex.notify();
-                        }
-                    }
-
                     synchronized(activeThreadsCount) {
                         activeThreadsCount.addAndGet(-1);
                     }
+
+                    if (activeThreadsCount.get() == 0)
+                        synchronized(mutex) {
+                            mutex.notify();
+                        }
+
                     synchronized(urlPool) {
                         urlPool.wait();
                     }
