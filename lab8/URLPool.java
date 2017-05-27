@@ -1,7 +1,4 @@
-import java.net.*;
-import java.io.*;
 import java.util.*;
-import java.util.regex.*;
 
 class URLPool {
 
@@ -9,12 +6,10 @@ class URLPool {
     private LinkedList<URLDepthPair> urlsToScan = new LinkedList<URLDepthPair>();
 
     public synchronized boolean addToScan(URLDepthPair urlDepthPair) {
-        if (scannedUrls.contains(urlDepthPair)) {
-
+        if (scannedUrls.contains(urlDepthPair))
             return false;
-        } else {
+        else
             return urlsToScan.add(urlDepthPair);
-        }
     }
 
     public synchronized boolean addScanned(URLDepthPair urlDepthPair) {

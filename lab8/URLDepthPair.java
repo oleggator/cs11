@@ -1,6 +1,7 @@
-import java.net.*;
+import java.net.URL;
+import java.net.MalformedURLException;
 
-class URLDepthPair extends Object {
+class URLDepthPair {
 
     private URL url;
     private int depth;
@@ -20,21 +21,17 @@ class URLDepthPair extends Object {
 
     @Override
     public boolean equals(Object obj) {
-        System.out.println("equals");
-        if (this.getClass() != obj.getClass()) {
+        if (this.getClass() != obj.getClass())
             return false;
-        }
 
-        if (((URLDepthPair)obj).url.toString().equals(url.toString())) {
+        if (((URLDepthPair)obj).url.toString().equals(url.toString()))
             return true;
-        }
 
         return false;
     }
 
     @Override
     public int hashCode() {
-        System.out.println("hash");
         return url.toString().hashCode();
     }
 }

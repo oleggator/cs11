@@ -1,7 +1,5 @@
-import java.net.*;
-import java.io.*;
-import java.util.*;
-import java.util.regex.*;
+import java.net.URL;
+import java.net.MalformedURLException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 class Crawler {
