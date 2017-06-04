@@ -45,11 +45,10 @@ class CrawlerTask implements Runnable {
                     continue;
                 }
             }
-            
+
             URLDepthPair urlDepthPair = urlPool.get();
-            if (urlDepthPair.getDepth() + 1 > depth) {
+            if (urlDepthPair == null || urlDepthPair.getDepth() + 1 > depth)
                 return;
-            }
 
             Socket socket;
 
@@ -100,6 +99,7 @@ class CrawlerTask implements Runnable {
 
             String responseLine = null;
             try {
+                urlPool.addScanned(urlDepthPair);
                 while ((responseLine = bufferedReader.readLine()) != null) {
                     Pattern pattern = Pattern.compile("href=\"(.*?)\"", Pattern.CASE_INSENSITIVE);
                     Matcher matcher = pattern.matcher(responseLine);
@@ -109,16 +109,22 @@ class CrawlerTask implements Runnable {
                         URL scannedUrl = new URL(urlDepthPair.getUrl(), urlString);
 
                         if (scannedUrl.getProtocol().equals("http")) {
-                            if (urlPool.addToScan(new URLDepthPair(scannedUrl,
-                                                                   urlDepthPair.getDepth() + 1))) {
+                            if (urlDepthPair.getDepth() + 1 >= depth) {
+
+                                if (urlPool.addScanned(new URLDepthPair(scannedUrl, urlDepthPair.getDepth() + 1)))
+                                    System.out.println((urlDepthPair.getDepth() + 1) + ": " +
+                                                      scannedUrl.toString());
+
+                            } else if (urlPool.addToScan(new URLDepthPair(scannedUrl,
+                                                                          urlDepthPair.getDepth() + 1))) {
 
                                 System.out.println((urlDepthPair.getDepth() + 1) + ": " +
                                                   scannedUrl.toString());
-                                                  
+
                                 synchronized(urlPool) {
                                     urlPool.notifyAll();
                                 }
-                                
+
                             }
                         }
                     }
